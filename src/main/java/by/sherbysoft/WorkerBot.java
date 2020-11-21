@@ -22,7 +22,8 @@ public class WorkerBot {
             @Override
             public int process(List<Update> updates) {
 
-                boolean cleanCommandReceived = updates.stream().filter(u -> u.message().text() != null)
+                boolean cleanCommandReceived = updates.stream().filter(u -> u != null && u.message() != null &&
+                        u.message().text() != null)
                         .anyMatch(u -> u.message().text().equals("/clear"));
 
                 if(cleanCommandReceived) {
