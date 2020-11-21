@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WorkerBot {
     public static void main(String[] args) {
@@ -22,12 +23,15 @@ public class WorkerBot {
             @Override
             public int process(List<Update> updates) {
 
-                boolean cleanCommandReceived = updates.stream().filter(u -> u != null && u.message() != null &&
+                List<Update> updatesWithMessage = updates.stream().filter(u -> u != null && u.message() != null &&
+                        u.message().text() != null).collect(Collectors.toList());
+
+                boolean cleanCommandReceived = updatesWithMessage.stream().filter(u -> u != null && u.message() != null &&
                         u.message().text() != null)
                         .anyMatch(u -> u.message().text().equals("/clear"));
 
                 if(cleanCommandReceived) {
-                    for(Update update:updates) {
+                    for(Update update:updatesWithMessage) {
                         DeleteMessage deleteMessage = new DeleteMessage(update.message().chat().id(),
                                 update.message().messageId());
                         bot.execute(deleteMessage);
