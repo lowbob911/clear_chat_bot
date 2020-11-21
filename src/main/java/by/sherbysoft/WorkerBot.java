@@ -3,6 +3,7 @@ package by.sherbysoft;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.GetChat;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.response.BaseResponse;
@@ -15,21 +16,26 @@ import java.util.List;
 
 public class WorkerBot {
     public static void main(String[] args) {
-//        try {
-//            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-//            telegramBotsApi.registerBot(new ClearChatBot());
-//        } catch (TelegramApiException e) {
-//            e.printStackTrace();
-//        }
 
         TelegramBot bot = new TelegramBot("1401157875:AAH58s3ffNjH-B8WPX16SrVSJrUtkrET-4E");
         bot.setUpdatesListener(new UpdatesListener() {
             @Override
             public int process(List<Update> updates) {
 
-                System.out.println(updates.size());
+                boolean cleanCommandReceived = updates.stream().filter(u -> u.message().text() != null)
+                        .anyMatch(u -> u.message().text().equals("/clear"));
 
-                return UpdatesListener.CONFIRMED_UPDATES_NONE;
+                if(cleanCommandReceived) {
+                    for(Update update:updates) {
+                        DeleteMessage deleteMessage = new DeleteMessage(update.message().chat().id(),
+                                update.message().messageId());
+                        bot.execute(deleteMessage);
+                    }
+
+                    return UpdatesListener.CONFIRMED_UPDATES_ALL;
+                } else {
+                    return UpdatesListener.CONFIRMED_UPDATES_NONE;
+                }
             }
         });
     }
