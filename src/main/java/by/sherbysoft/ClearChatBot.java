@@ -1,3 +1,5 @@
+package by.sherbysoft;
+
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,8 +14,10 @@ public class ClearChatBot extends TelegramLongPollingBot {
         return "1401157875:AAH58s3ffNjH-B8WPX16SrVSJrUtkrET-4E";
     }
 
+    @Override
     public void onUpdateReceived(Update update) {
         String message = update.getMessage().getText();
+        System.out.println("test");
         sendMsg(update.getMessage().getChatId().toString(), message);
     }
 
